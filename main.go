@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/config"
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/customers"
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/server"
 	"go.uber.org/fx"
@@ -13,6 +14,7 @@ import (
 // @BasePath  /
 func main() {
 	fx.New(fx.Options(
+		fx.Provide(config.New),
 		fx.Provide(customers.NewController),
 		fx.Provide(customers.NewServices),
 		fx.Invoke(server.Start),
