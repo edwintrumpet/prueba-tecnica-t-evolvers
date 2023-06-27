@@ -15,7 +15,7 @@ func NewDB(c config.Config) *gorm.DB {
 		log.Fatalf("error opening database: %s\n", err.Error())
 	}
 
-	if err := db.AutoMigrate(&models.Customer{}); err != nil {
+	if err := db.AutoMigrate(&models.Customer{}, &models.WorkOrders{}); err != nil {
 		log.Fatalf("error migrating db: %s\n", err.Error())
 	}
 
