@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/ansel1/merry"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,7 +18,7 @@ import (
 func (s *server) ListCustomers(c echo.Context) error {
 	customers, err := s.customers.List()
 	if err != nil {
-		return err
+		return merry.Wrap(err)
 	}
 
 	return c.JSON(http.StatusOK, customers)

@@ -16,11 +16,13 @@ type config struct {
 		DBName   string `env:"DB_NAME"`
 		Port     int    `env:"DB_PORT" envDefault:"5432"`
 	}
+	Env string `env:"ENV" envDefault:"prod"`
 }
 
 type Config interface {
 	GetPort() string
 	DBDns() string
+	IsDev() bool
 }
 
 // New creates and populates a config object with all the environment variables
@@ -48,4 +50,8 @@ func (c *config) DBDns() string {
 		c.DB.DBName,
 		c.DB.Port,
 	)
+}
+
+func (c *config) IsDev() bool {
+	return c.Env == "dev"
 }

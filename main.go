@@ -20,5 +20,5 @@ func main() {
 		fx.Provide(customers.New),
 		fx.Provide(api.NewServer),
 		fx.Invoke(api.Server.Start),
-	))
+	)).Run()
 }

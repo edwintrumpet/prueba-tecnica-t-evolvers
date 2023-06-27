@@ -1,6 +1,7 @@
 package customers
 
 import (
+	"github.com/ansel1/merry/v2"
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/models"
 	"gorm.io/gorm"
 )
@@ -24,7 +25,7 @@ func (s *service) List() ([]models.Customer, error) {
 	res := s.db.Find(&customers)
 
 	if res.Error != nil {
-		return nil, res.Error
+		return nil, merry.Wrap(res.Error)
 	}
 
 	return customers, nil
