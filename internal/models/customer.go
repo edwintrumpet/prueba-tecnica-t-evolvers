@@ -1,8 +1,8 @@
-package customers
+package models
 
 import "time"
 
-type customer struct {
+type Customer struct {
 	ID        string    `json:"id" db:"id" example:"256c1214-3385-4235-9cfe-1dc85a5f2a46" format:"uuid"`
 	FirstName string    `json:"firstName" db:"first_name" example:"Homer"`
 	LastName  string    `json:"lastName" db:"last_name" example:"Simpson"`
