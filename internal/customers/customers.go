@@ -1,22 +1,31 @@
 package customers
 
-import "github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/models"
+import (
+	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/models"
+	"gorm.io/gorm"
+)
 
-type service struct{}
+type service struct {
+	db *gorm.DB
+}
 
 type Service interface {
 	List() ([]models.Customer, error)
 }
 
-func New() Service {
-	return &service{}
+func New(db *gorm.DB) Service {
+	return &service{
+		db: db,
+	}
 }
 
 func (s *service) List() ([]models.Customer, error) {
-	return []models.Customer{
-		{
-			FirstName: "Luisa",
-			Address:   "from customers package",
-		},
-	}, nil
+	customers := []models.Customer{}
+	res := s.db.Find(&customers)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return customers, nil
 }
