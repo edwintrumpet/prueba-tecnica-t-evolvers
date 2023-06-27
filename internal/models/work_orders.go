@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type WorkOrders struct {
+type WorkOrder struct {
 	ID               string    `json:"id" example:"256c1214-3385-4235-9cfe-1dc85a5f2a46" format:"uuid" gorm:"column:id;type:uuid;primary_key;default:gen_random_uuid()"`
 	CustomerID       string    `json:"customerId" example:"256c1214-3385-4235-9cfe-1dc85a5f2a46" format:"uuid" gorm:"column:customer_id;type:uuid;not null"`
 	Title            string    `json:"title" example:"something" gorm:"column:title;type:varchar(255);not null"`

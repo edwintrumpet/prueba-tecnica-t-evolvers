@@ -15,10 +15,11 @@ func (s *server) routes(e *echo.Echo) {
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	e.GET("/customers", s.ListCustomers)
+	e.POST("/customers", s.CreateCustomers)
 }
 
 /*
+TODO
 crear orden de servicio
 finalizar orden de servicio
 listar clientes activos

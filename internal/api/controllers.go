@@ -4,22 +4,30 @@ import (
 	"net/http"
 
 	"github.com/ansel1/merry"
+	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/models"
 	"github.com/labstack/echo/v4"
 )
 
-// List list customers
-// @Summary List customers
-// @Description List customers
+// CreateCustomers creates a new customer
+// @Summary Create
+// @Description Creates a new customer
 // @Tags Customers
+// @Accept json
 // @Produce json
-// @Param title query string false "search by title"
-// @Success 200 {object} []models.Customer
-// @Router /customers [get]
-func (s *server) ListCustomers(c echo.Context) error {
-	customers, err := s.customers.List()
+// @Param data body models.CreateCustomer true "initial data to create a customer"
+// @Success 201 {object} models.Customer
+// @Router /customers [post]
+func (s *server) CreateCustomers(c echo.Context) error {
+	var req models.CreateCustomer
+
+	if err := c.Bind(&req); err != nil {
+		return merry.Wrap(err)
+	}
+
+	customer, err := s.customers.Create(req)
 	if err != nil {
 		return merry.Wrap(err)
 	}
 
-	return c.JSON(http.StatusOK, customers)
+	return c.JSON(http.StatusOK, customer)
 }
