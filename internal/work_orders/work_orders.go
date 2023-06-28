@@ -20,6 +20,7 @@ type service struct {
 type Service interface {
 	Create(models.CreateWorkOrder) (*models.WorkOrder, error)
 	Finish(req models.FinishWorkOrder) (*models.WorkOrder, error)
+	ListAll(req models.ListAllWorkOrders) ([]models.WorkOrder, error)
 }
 
 func New(db *gorm.DB, rdb *redis.Client) Service {
@@ -128,4 +129,50 @@ func (s *service) Finish(req models.FinishWorkOrder) (*models.WorkOrder, error) 
 	}
 
 	return &workOrder, nil
+}
+
+func (s *service) ListAll(req models.ListAllWorkOrders) ([]models.WorkOrder, error) {
+	/* -------------------------- Data validation -------------------------- */
+	if err := req.Validate(); err != nil {
+		return nil, merry.Wrap(err).
+			WithHTTPCode(http.StatusBadRequest).
+			WithUserMessage(err.Error())
+	}
+
+	tx := s.db
+
+	if req.Since != "" {
+		since, err := time.Parse(time.RFC3339, req.Since)
+		if err != nil {
+			return nil, merry.Wrap(err).
+				WithHTTPCode(http.StatusBadRequest).
+				WithUserMessage("since format should be in iso date")
+		}
+
+		tx = tx.Where("created_at >= ?", since)
+	}
+
+	if req.Until != "" {
+		until, err := time.Parse(time.RFC3339, req.Until)
+		if err != nil {
+			return nil, merry.Wrap(err).
+				WithHTTPCode(http.StatusBadRequest).
+				WithUserMessage("until format should be in iso date")
+		}
+
+		tx = tx.Where("created_at <= ?", until)
+	}
+
+	if req.Status != "" {
+		tx = tx.Where("status = ?", req.Status)
+	}
+
+	workOrders := []models.WorkOrder{}
+
+	res := tx.Find(&workOrders)
+	if err := res.Error; err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	return workOrders, nil
 }

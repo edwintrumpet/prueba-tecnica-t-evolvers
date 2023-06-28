@@ -99,3 +99,28 @@ func (s *server) FinishWorkOrder(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, order)
 }
+
+// ListAllWorkOrders list all work orders with filters by status and date
+// @Summary List all work orders
+// @Description List all work orders with filters by status and date
+// @Tags Work orders
+// @Produce json
+// @Param until query string false "iso date"
+// @Param since query string false "iso date"
+// @Param status query string false "new, cancelled, done"
+// @Success 200 {object} []models.WorkOrder
+// @Router /customers [get]
+func (s *server) ListAllWorkOrders(c echo.Context) error {
+	req := models.ListAllWorkOrders{
+		Since:  c.QueryParam("since"),
+		Until:  c.QueryParam("until"),
+		Status: c.QueryParam("status"),
+	}
+
+	orders, err := s.workOrders.ListAll(req)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	return c.JSON(http.StatusOK, orders)
+}

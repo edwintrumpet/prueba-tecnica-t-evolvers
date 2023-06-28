@@ -19,5 +19,6 @@ func (s *server) routes(e *echo.Echo) {
 	e.GET("/customers", s.ListActiveCustomers)
 
 	e.POST("/workorders", s.CreateWorkOrder)
+	e.GET("/workorders", s.ListAllWorkOrders)
 	e.POST("/workorders/finish", s.FinishWorkOrder)
 }

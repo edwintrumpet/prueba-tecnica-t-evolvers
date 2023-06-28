@@ -38,6 +38,12 @@ type FinishWorkOrder struct {
 	WorkOrderID string `json:"workOrderId" example:"cd9bde09-5374-4749-86a6-34866c100e6e" format:"uuid" binding:"required"`
 }
 
+type ListAllWorkOrders struct {
+	Status string `json:"status"`
+	Since  string `json:"since"`
+	Until  string `json:"until"`
+}
+
 func (c CreateWorkOrder) Validate() error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CustomerID, validation.Required, is.UUID),
@@ -51,5 +57,11 @@ func (c FinishWorkOrder) Validate() error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CustomerID, validation.Required, is.UUID),
 		validation.Field(&c.WorkOrderID, validation.Required, is.UUID),
+	)
+}
+
+func (c ListAllWorkOrders) Validate() error {
+	return validation.ValidateStruct(&c,
+		validation.Field(&c.Status, validation.In(string(New), string(Cancelled), string(Done))),
 	)
 }
