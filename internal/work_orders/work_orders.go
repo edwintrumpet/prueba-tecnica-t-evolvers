@@ -10,6 +10,7 @@ import (
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/models"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type service struct {
@@ -169,7 +170,7 @@ func (s *service) ListAll(req models.ListAllWorkOrders) ([]models.WorkOrder, err
 
 	workOrders := []models.WorkOrder{}
 
-	res := tx.Find(&workOrders)
+	res := tx.Preload(clause.Associations).Find(&workOrders)
 	if err := res.Error; err != nil {
 		return nil, merry.Wrap(err)
 	}
