@@ -16,6 +16,7 @@ type service struct {
 
 type Service interface {
 	Create(models.CreateWorkOrder) (*models.WorkOrder, error)
+	Finish(req models.FinishWorkOrder) (*models.WorkOrder, error)
 }
 
 func New(db *gorm.DB) Service {
@@ -76,4 +77,37 @@ func (s *service) Create(c models.CreateWorkOrder) (*models.WorkOrder, error) {
 	}
 
 	return &data, nil
+}
+
+func (s *service) Finish(req models.FinishWorkOrder) (*models.WorkOrder, error) {
+	/* -------------------------- Data validation -------------------------- */
+	if err := req.Validate(); err != nil {
+		return nil, merry.Wrap(err).
+			WithHTTPCode(http.StatusBadRequest).
+			WithUserMessage(err.Error())
+	}
+
+	workOrder := models.WorkOrder{}
+	/* -------------------------- Update customer -------------------------- */
+	tx := s.db.Begin()
+	tx.Model(&workOrder).
+		Where("id = ?", req.WorkOrderID).
+		Update("status", models.Done).
+		Scan(&workOrder)
+	/* -------------------------- Update customer -------------------------- */
+	tx.Model(&workOrder.Customer).
+		Where("id = ?", req.CustomerID).
+		Updates(map[string]interface{}{
+			"is_active":  true,
+			"start_date": time.Now().UTC(),
+		}).Scan(&workOrder.Customer)
+	/* ------------------------ Send event to Redis ------------------------ */
+	// stream
+
+	res := tx.Commit()
+	if err := res.Error; err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	return &workOrder, nil
 }

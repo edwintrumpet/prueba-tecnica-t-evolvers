@@ -17,12 +17,5 @@ func (s *server) routes(e *echo.Echo) {
 
 	e.POST("/customers", s.CreateCustomers)
 	e.POST("/workorders", s.CreateWorkOrder)
+	e.POST("/workorders/finish", s.FinishWorkOrder)
 }
-
-/*
-TODO
-crear orden de servicio
-finalizar orden de servicio
-listar clientes activos
-listar ordenes de servicio (por fecha, cliente)
-*/
