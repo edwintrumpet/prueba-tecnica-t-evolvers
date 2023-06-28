@@ -8,6 +8,8 @@ import (
 
 	"github.com/ansel1/merry"
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/models"
+	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -22,6 +24,7 @@ type Service interface {
 	Create(models.CreateWorkOrder) (*models.WorkOrder, error)
 	Finish(req models.FinishWorkOrder) (*models.WorkOrder, error)
 	ListAll(req models.ListAllWorkOrders) ([]models.WorkOrder, error)
+	ListByCustomer(CustomerID string) ([]models.WorkOrder, error)
 }
 
 func New(db *gorm.DB, rdb *redis.Client) Service {
@@ -171,6 +174,25 @@ func (s *service) ListAll(req models.ListAllWorkOrders) ([]models.WorkOrder, err
 	workOrders := []models.WorkOrder{}
 
 	res := tx.Preload(clause.Associations).Find(&workOrders)
+	if err := res.Error; err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	return workOrders, nil
+}
+
+func (s *service) ListByCustomer(customerID string) ([]models.WorkOrder, error) {
+	if err := validation.Validate(customerID, validation.Required, is.UUID); err != nil {
+		return nil, merry.Wrap(err).
+			WithHTTPCode(http.StatusBadRequest).
+			WithUserMessage("customerId:" + err.Error())
+	}
+
+	workOrders := []models.WorkOrder{}
+
+	res := s.db.Where("customer_id = ?", customerID).
+		Preload(clause.Associations).
+		Find(&workOrders)
 	if err := res.Error; err != nil {
 		return nil, merry.Wrap(err)
 	}

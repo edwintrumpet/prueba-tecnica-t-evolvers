@@ -109,7 +109,7 @@ func (s *server) FinishWorkOrder(c echo.Context) error {
 // @Param since query string false "iso date"
 // @Param status query string false "new, cancelled, done"
 // @Success 200 {object} []models.WorkOrder
-// @Router /customers [get]
+// @Router /workorders [get]
 func (s *server) ListAllWorkOrders(c echo.Context) error {
 	req := models.ListAllWorkOrders{
 		Since:  c.QueryParam("since"),
@@ -118,6 +118,25 @@ func (s *server) ListAllWorkOrders(c echo.Context) error {
 	}
 
 	orders, err := s.workOrders.ListAll(req)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	return c.JSON(http.StatusOK, orders)
+}
+
+// ListWorkOrdersByCustomer list all work orders by a customer
+// @Summary List work orders by customer
+// @Description List all work orders by a customer
+// @Tags Work orders
+// @Produce json
+// @Param customerId path string true "uuid"
+// @Success 200 {object} []models.WorkOrder
+// @Router /workorders/customer/{customerId} [get]
+func (s *server) ListWorkOrdersByCustomer(c echo.Context) error {
+	customerId := c.Param("customerId")
+
+	orders, err := s.workOrders.ListByCustomer(customerId)
 	if err != nil {
 		return merry.Wrap(err)
 	}
