@@ -13,7 +13,7 @@ import (
 // @title           enerBit API
 // @version         0.1
 // @description     API to manage customers and work orders
-// @host      localhost:3000
+// @host      http://35.175.235.82
 // @BasePath  /
 func main() {
 	fx.New(fx.Options(

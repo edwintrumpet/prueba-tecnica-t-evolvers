@@ -2,6 +2,9 @@
 
 Crud para realizar el seguimiento de órdenes de servicio
 
+Disponible en http://35.175.235.82
+Documentación http://35.175.235.82/swagger/index.html
+
 ## Desarrollo
 
 No hay docker-compose para develop. La api fue desarrollada ejecutando con el

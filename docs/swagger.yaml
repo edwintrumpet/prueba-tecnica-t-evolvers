@@ -118,7 +118,7 @@ definitions:
     type: string
     x-enum-varnames:
     - New
-host: localhost:3000
+host: http://35.175.235.82
 info:
   contact: {}
   description: API to manage customers and work orders

@@ -6,7 +6,7 @@
         "contact": {},
         "version": "0.1"
     },
-    "host": "localhost:3000",
+    "host": "http://35.175.235.82",
     "basePath": "/",
     "paths": {
         "/customers": {

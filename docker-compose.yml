@@ -18,7 +18,7 @@ services:
       redisdb:
         condition: service_healthy
     ports:
-      - 5000:5000
+      - 80:3000
   postgres:
     image: postgres
     environment:

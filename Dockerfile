@@ -25,6 +25,6 @@ WORKDIR /usr/src/app
 
 COPY --from=builder ["/usr/src/app/bin/server", "/usr/src/app/"]
 
-EXPOSE 5000
+EXPOSE 3000
 
 CMD ["./server"]
