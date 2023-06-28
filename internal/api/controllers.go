@@ -34,6 +34,22 @@ func (s *server) CreateCustomers(c echo.Context) error {
 	return c.JSON(http.StatusCreated, customer)
 }
 
+// ListActiveCustomers list customers with is_active in true
+// @Summary List active customers
+// @Description List customers with is_active in true
+// @Tags Customers
+// @Produce json
+// @Success 200 {object} []models.Customer
+// @Router /customers [get]
+func (s *server) ListActiveCustomers(c echo.Context) error {
+	customers, err := s.customers.ListActive()
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	return c.JSON(http.StatusOK, customers)
+}
+
 /* ------------------------------ Work orders ------------------------------ */
 
 // CreateWorkOrder creates a new work order

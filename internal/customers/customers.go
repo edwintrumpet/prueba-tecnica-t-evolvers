@@ -15,6 +15,7 @@ type service struct {
 
 type Service interface {
 	Create(models.CreateCustomer) (*models.Customer, error)
+	ListActive() ([]models.Customer, error)
 }
 
 func New(db *gorm.DB) Service {
@@ -55,4 +56,15 @@ func (s *service) Create(c models.CreateCustomer) (*models.Customer, error) {
 	}
 
 	return &data, nil
+}
+
+func (s *service) ListActive() ([]models.Customer, error) {
+	customers := []models.Customer{}
+
+	res := s.db.Where("is_active = ?", true).Find(&customers)
+	if err := res.Error; err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	return customers, nil
 }
