@@ -5,6 +5,7 @@ import (
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/config"
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/customers"
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/db"
+	workorders "github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/work_orders"
 	"go.uber.org/fx"
 )
 
@@ -18,6 +19,7 @@ func main() {
 		fx.Provide(config.New),
 		fx.Provide(db.NewDB),
 		fx.Provide(customers.New),
+		fx.Provide(workorders.New),
 		fx.Provide(api.NewServer),
 		fx.Invoke(api.Server.Start),
 	)).Run()

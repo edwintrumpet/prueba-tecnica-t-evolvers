@@ -24,13 +24,15 @@ func New(db *gorm.DB) Service {
 }
 
 func (s *service) Create(c models.CreateCustomer) (*models.Customer, error) {
-	/* -------------------------Business----------------------------*/
+	/* -------------------------- Data validation -------------------------- */
 	if err := c.Validate(); err != nil {
 		return nil, merry.Wrap(err).
 			WithHTTPCode(http.StatusBadRequest).
 			WithUserMessage(err.Error())
 	}
 
+	/* -------------------------- Type conversion -------------------------- */
+	// Convert a CreateCustomer into a Customer to save it
 	b, err := json.Marshal(c)
 	if err != nil {
 		return nil, merry.Wrap(err)
@@ -41,14 +43,15 @@ func (s *service) Create(c models.CreateCustomer) (*models.Customer, error) {
 		return nil, merry.Wrap(err)
 	}
 
-	/* ------------------------Repository---------------------------*/
+	/* -------------------------- Save on database -------------------------- */
 	res := s.db.Create(&data)
 	if err := res.Error; err != nil {
 		return nil, merry.Wrap(err)
 	}
 
 	if res.RowsAffected != 1 {
-		return nil, merry.New("the customer was not created")
+		errMsg := "the customer was not created"
+		return nil, merry.New(errMsg).WithUserMessage(errMsg)
 	}
 
 	return &data, nil

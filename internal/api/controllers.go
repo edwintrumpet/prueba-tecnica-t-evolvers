@@ -29,5 +29,29 @@ func (s *server) CreateCustomers(c echo.Context) error {
 		return merry.Wrap(err)
 	}
 
-	return c.JSON(http.StatusOK, customer)
+	return c.JSON(http.StatusCreated, customer)
+}
+
+// CreateWorkOrder creates a new work order
+// @Summary Create
+// @Description Creates a new work order
+// @Tags Work orders
+// @Accept json
+// @Produce json
+// @Param data body models.CreateWorkOrder true "initial data to create a work order"
+// @Success 201 {object} models.WorkOrder
+// @Router /workorders [post]
+func (s *server) CreateWorkOrder(c echo.Context) error {
+	var req models.CreateWorkOrder
+
+	if err := c.Bind(&req); err != nil {
+		return merry.Wrap(err)
+	}
+
+	order, err := s.workOrders.Create(req)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	return c.JSON(http.StatusCreated, order)
 }

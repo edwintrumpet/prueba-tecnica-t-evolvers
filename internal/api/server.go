@@ -5,13 +5,15 @@ import (
 	_ "github.com/edwintrumpet/prueba-tecnica-t-evolvers/docs"
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/config"
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/customers"
+	workorders "github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/work_orders"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 )
 
 type server struct {
-	customers customers.Service
+	customers  customers.Service
+	workOrders workorders.Service
 }
 
 type Server interface {
@@ -22,9 +24,13 @@ type ErrorResponse struct {
 	Error string `json:"error" example:"error message"`
 }
 
-func NewServer(customers customers.Service) Server {
+func NewServer(
+	customers customers.Service,
+	workOrders workorders.Service,
+) Server {
 	return &server{
-		customers: customers,
+		customers:  customers,
+		workOrders: workOrders,
 	}
 }
 
@@ -53,6 +59,10 @@ func (s *server) Start(conf config.Config) {
 func errorHandler(err error, c echo.Context) {
 	userMessage := merry.UserMessage(err)
 	statusCode := merry.HTTPCode(err)
+
+	if userMessage == "" {
+		userMessage = merry.Message(err)
+	}
 
 	logrus.WithFields(logrus.Fields{
 		"stack":       merry.Stacktrace(err),

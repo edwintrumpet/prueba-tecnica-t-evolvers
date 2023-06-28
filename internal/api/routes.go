@@ -16,6 +16,7 @@ func (s *server) routes(e *echo.Echo) {
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.POST("/customers", s.CreateCustomers)
+	e.POST("/workorders", s.CreateWorkOrder)
 }
 
 /*
