@@ -16,6 +16,9 @@ type config struct {
 		DBName   string `env:"DB_NAME"`
 		Port     int    `env:"DB_PORT" envDefault:"5432"`
 	}
+	Redis struct {
+		Addr string `env:"REDIS_ADDR" envDefault:"localhost:6379"`
+	}
 	Env string `env:"ENV" envDefault:"prod"`
 }
 
@@ -23,6 +26,7 @@ type Config interface {
 	GetPort() string
 	DBDns() string
 	IsDev() bool
+	RedisAddr() string
 }
 
 // New creates and populates a config object with all the environment variables
@@ -54,4 +58,8 @@ func (c *config) DBDns() string {
 
 func (c *config) IsDev() bool {
 	return c.Env == "dev"
+}
+
+func (c *config) RedisAddr() string {
+	return c.Redis.Addr
 }

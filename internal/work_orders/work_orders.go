@@ -1,17 +1,20 @@
 package workorders
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"time"
 
 	"github.com/ansel1/merry"
 	"github.com/edwintrumpet/prueba-tecnica-t-evolvers/internal/models"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
 type service struct {
-	db *gorm.DB
+	db  *gorm.DB
+	rdb *redis.Client
 }
 
 type Service interface {
@@ -19,9 +22,10 @@ type Service interface {
 	Finish(req models.FinishWorkOrder) (*models.WorkOrder, error)
 }
 
-func New(db *gorm.DB) Service {
+func New(db *gorm.DB, rdb *redis.Client) Service {
 	return &service{
-		db: db,
+		db:  db,
+		rdb: rdb,
 	}
 }
 
@@ -101,8 +105,22 @@ func (s *service) Finish(req models.FinishWorkOrder) (*models.WorkOrder, error) 
 			"is_active":  true,
 			"start_date": time.Now().UTC(),
 		}).Scan(&workOrder.Customer)
+
 	/* ------------------------ Send event to Redis ------------------------ */
-	// stream
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	if err := s.rdb.XAdd(ctx, &redis.XAddArgs{
+		Stream: "finished-orders",
+		ID:     "*",
+		Values: map[string]string{
+			"WorkOrderId": req.WorkOrderID,
+			"customerId":  req.CustomerID,
+			"status":      string(workOrder.Status),
+		},
+	}).Err(); err != nil {
+		return nil, merry.Wrap(err)
+	}
 
 	res := tx.Commit()
 	if err := res.Error; err != nil {
