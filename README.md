@@ -2,13 +2,14 @@
 
 Crud para realizar el seguimiento de órdenes de servicio
 
-## Develop
+## Desarrollo
 
-There is no a docker-compose for develop. The api was developed running with the
-vsCode debugger.
+No hay docker-compose para develop. La api fue desarrollada ejecutando con el
+debugger de vsCode.
 
-You can provide postgres and redis from docker exposing ports to attach locally,
-and provide env variables to the app using a `.vscode/launch.json`
+Puedes proveer postgres y redis desde docker exponiendo los puertos en local y
+ejecutar la api con el debugger de vsCode usando un `.vscode/launch.json` para
+proveer las variables de entorno
 
 ```json
 {
@@ -33,22 +34,24 @@ and provide env variables to the app using a `.vscode/launch.json`
         }
     ]
 }
-
-Setting env variable `env` as **dev** you can see logs for debug
-
 ```
 
-## Deploy
+Poniendo la variable de entorno `env` como **dev** puedes ver los logs para debug
 
-Execute using docker-compose
+## Despliegue
 
-Required environment variables to run from docker-compose
+Ejecute usando docker-compose
+```bash
+docker-compose up -d
+```
+
+Variables requeridas para ejecutar desde docker-compose
 
 - DB_USER
 - DB_PASSWORD
 - DB_NAME
 
-you can create an `.env` file to provide them
+Puedes crear un archivo `.env` para proveerlas
 
 ```
 DB_USER=edwin
